@@ -12,6 +12,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 # This verifies the token and returns current user
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    # check if token is blacklisted
+    blacklisted = db.query(models.BlacklistedToken).filter(
+        models.BlacklistedToken.token == token
+    ).first()
+    if blacklisted:
+        raise HTTPException(status_code=401, detail="Token has been invalidated. Please log in again.")
+
     user_id = auth.verify_token(token)
     if user_id is None:
         raise HTTPException(status_code=401, detail="Invalid or expired token")
@@ -46,3 +53,16 @@ def delete_account(current_user = Depends(get_current_user), db: Session = Depen
     db.delete(current_user)
     db.commit()
     return {"detail": "Account deleted successfully"}
+
+# add logout route
+@router.post("/logout")
+def logout(
+    token: str = Depends(oauth2_scheme),
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # add token to blacklist
+    blacklisted = models.BlacklistedToken(token=token)
+    db.add(blacklisted)
+    db.commit()
+    return {"message": "Logged out successfully"}

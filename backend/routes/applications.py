@@ -9,30 +9,38 @@ import models
 router = APIRouter(prefix="/applications", tags=["Applications"])
 
 # ===== ADD NEW APPLICATION =====
+from sanitize import sanitize_application
+
+# in create_application route add this before saving:
 @router.post("/")
 def create_application(
-    app_data: ApplicationCreate,      # data coming in from frontend
-    current_user = Depends(get_current_user),  # checks token, gets logged in user
-    db: Session = Depends(get_db)     # opens database session
+    app_data: ApplicationCreate,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
 ):
-    # create a new application object using data from frontend
-    # and link it to the current logged in user via user_id
+    # sanitize input data
+    sanitized = sanitize_application({
+        "company_name": app_data.company_name,
+        "job_title": app_data.job_title,
+        "job_type": app_data.job_type,
+        "job_url": app_data.job_url,
+        "notes": app_data.notes,
+    })
+
     new_application = models.Application(
-        user_id=current_user.id,       # links to logged in user
-        company_name=app_data.company_name,
-        job_title=app_data.job_title,
-        job_type=app_data.job_type,
-        job_url=app_data.job_url,
+        user_id=current_user.id,
+        company_name=sanitized["company_name"],
+        job_title=sanitized["job_title"],
+        job_type=sanitized["job_type"],
+        job_url=sanitized["job_url"],
         deadline=app_data.deadline,
-        notes=app_data.notes,
-        status="Applied"               # always starts as Applied
+        notes=sanitized["notes"],
+        status="Applied"
     )
-    db.add(new_application)            # add to database session
-    db.commit()                        # save to MySQL
-    db.refresh(new_application)        # reload with generated id
+    db.add(new_application)
+    db.commit()
+    db.refresh(new_application)
     return {"message": "Application added successfully"}
-
-
 # ===== GET ALL MY APPLICATIONS =====
 @router.get("/")
 def get_applications(

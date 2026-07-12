@@ -47,3 +47,18 @@ class Document(Base):
     owner = relationship("User", back_populates="documents")
 
    
+class PasswordResetToken(Base):
+    __tablename__ = "password_reset_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(100), nullable=False)
+    token = Column(String(255), nullable=False, unique=True)
+    expires_at = Column(DateTime, nullable=False)
+    used = Column(String(10), default="false")  # tracks if token was already used
+
+class BlacklistedToken(Base):
+    __tablename__ = "blacklisted_tokens"
+
+    id = Column(Integer, primary_key=True, index=True)
+    token = Column(String(500), nullable=False, unique=True)
+    blacklisted_at = Column(DateTime, default=func.now())

@@ -66,6 +66,15 @@ function Login() {
           </button>
         </form>
 
+        {/* forgot password link */}
+      <p className="mt-3 text-center text-sm">
+       <span
+    onClick={() => navigate("/forgot-password")}
+    className="text-blue-500 cursor-pointer hover:underline"
+    >
+    Forgot Password?
+         </span>
+      </p>
         {/* link to register page */}
         <p className="mt-4 text-center text-sm">
           Don't have an account?{" "}
