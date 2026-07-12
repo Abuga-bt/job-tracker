@@ -17,8 +17,7 @@ limiter = Limiter(key_func=get_remote_address)
 
 # ── Send email helper ─────────────────────────────────────────────────────────
 def send_reset_email(email: str, reset_token: str, user_name: str):
-    reset_link = f"http://localhost:5173/reset-password?token={reset_token}"
-
+    reset_link = f"https://job-tracker-sally.netlify.app/reset-password?token={reset_token}"
     msg = MIMEMultipart()
     msg["From"] = os.getenv("MAIL_EMAIL")
     msg["To"] = email

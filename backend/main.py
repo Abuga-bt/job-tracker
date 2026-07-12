@@ -25,7 +25,10 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # ── CORS ──────────────────────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "https://job-tracker-sally.netlify.app"  # your Netlify URL
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
