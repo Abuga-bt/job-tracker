@@ -27,13 +27,12 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://job-tracker-sally.netlify.app"  # your Netlify URL
+        "https://job-tracker-sally.netlify.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 # ── Global error handler ───────────────────────────────────────────────────────
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
