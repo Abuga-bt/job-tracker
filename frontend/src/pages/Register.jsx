@@ -15,7 +15,14 @@ function Register() {
     e.preventDefault()
     try {
       await API.post("/auth/register", { name, email, phone, password })
-      navigate("/login")
+      
+      // auto login after register
+      const response = await API.post("/auth/login", { email, password })
+      localStorage.setItem("token", response.data.access_token)
+      localStorage.setItem("user_name", response.data.user_name)
+      
+      // go straight to dashboard
+      navigate("/dashboard")
     } catch (error) {
       setError(error.response?.data?.detail || "Registration failed. Try again.")
     }
