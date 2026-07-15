@@ -13,21 +13,30 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setError("")
+    
     try {
+      // register
       await API.post("/auth/register", { name, email, phone, password })
       
-      // auto login after register
+      // auto login
       const response = await API.post("/auth/login", { email, password })
       localStorage.setItem("token", response.data.access_token)
       localStorage.setItem("user_name", response.data.user_name)
       
-      // go straight to dashboard
+      // go to dashboard
       navigate("/dashboard")
     } catch (error) {
-      setError(error.response?.data?.detail || "Registration failed. Try again.")
+      // show exact error from backend
+      const message = error.response?.data?.detail
+      if (Array.isArray(message)) {
+        // pydantic validation errors come as array
+        setError(message.map(e => e.msg).join(", "))
+      } else {
+        setError(message || "Registration failed. Try again.")
+      }
     }
   }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-950">
       <div className="bg-white dark:bg-gray-900 p-8 rounded-xl shadow-md w-96">
