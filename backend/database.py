@@ -8,20 +8,10 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# TiDB requires SSL
-connect_args = {
-    "ssl": {
-        "ssl_mode": "VERIFY_IDENTITY",
-        "ssl_ca": "/etc/ssl/certs/ca-certificates.crt"  # Render has this
-    }
-} if "tidbcloud" in (DATABASE_URL or "") else {}
-
-engine = create_engine(
-    DATABASE_URL,
-    connect_args=connect_args
-)
+engine = create_engine(DATABASE_URL)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
 Base = declarative_base()
 
 def get_db():
