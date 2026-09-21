@@ -9,6 +9,7 @@ from slowapi.util import get_remote_address
 import models, auth, os, secrets, smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import resend
 
 load_dotenv()
 
@@ -16,41 +17,35 @@ router = APIRouter(prefix="/password", tags=["Password Reset"])
 limiter = Limiter(key_func=get_remote_address)
 
 # ── Send email helper ─────────────────────────────────────────────────────────
+
+resend.api_key = os.getenv("RESEND_API_KEY")
+
 def send_reset_email(email: str, reset_token: str, user_name: str):
     reset_link = f"https://job-tracker-sally.netlify.app/reset-password?token={reset_token}"
-    msg = MIMEMultipart()
-    msg["From"] = os.getenv("MAIL_EMAIL")
-    msg["To"] = email
-    msg["Subject"] = "Job Tracker — Password Reset Request"
-
-    body = f"""
-    <html>
-    <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <h2 style="color: #378ADD;">Password Reset Request</h2>
-        <p>Hi {user_name},</p>
-        <p>Click the button below to reset your password.</p>
-        <p>This link expires in <strong>30 minutes.</strong></p>
-        <a href="{reset_link}"
-           style="display: inline-block; background: #378ADD; color: white;
-                  padding: 12px 24px; border-radius: 8px; text-decoration: none;
-                  margin: 20px 0;">
-           Reset My Password
-        </a>
-        <p>If you didn't request this, ignore this email.</p>
-        <p style="color: #888; font-size: 12px;">Job Tracker — Your career companion</p>
-    </body>
-    </html>
-    """
-
-    msg.attach(MIMEText(body, "html"))
-
-    print(f"🔍 Connecting to Gmail...")
-    with smtplib.SMTP("smtp.gmail.com", 587) as server:
-        server.starttls()
-        server.login(os.getenv("MAIL_EMAIL"), os.getenv("MAIL_PASSWORD"))
-        server.sendmail(os.getenv("MAIL_EMAIL"), email, msg.as_string())
-        print(f"✅ Email sent to {email}!")
-
+    
+    resend.Emails.send({
+        "from": "JobTracker <onboarding@resend.dev>",
+        "to": email,
+        "subject": "Job Tracker — Password Reset Request",
+        "html": f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #378ADD;">Password Reset Request</h2>
+            <p>Hi {user_name},</p>
+            <p>Click the button below to reset your password.</p>
+            <p>This link expires in <strong>30 minutes.</strong></p>
+            <a href="{reset_link}"
+               style="display: inline-block; background: #378ADD; color: white;
+                      padding: 12px 24px; border-radius: 8px; text-decoration: none;
+                      margin: 20px 0;">
+               Reset My Password
+            </a>
+            <p>If you didn't request this, ignore this email.</p>
+        </body>
+        </html>
+        """
+    })
+    print(f"✅ Email sent to {email}!")
 # ── Schemas ───────────────────────────────────────────────────────────────────
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
