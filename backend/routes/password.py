@@ -17,20 +17,20 @@ router = APIRouter(prefix="/password", tags=["Password Reset"])
 limiter = Limiter(key_func=get_remote_address)
 
 # ── Send email helper ─────────────────────────────────────────────────────────
-
-resend.api_key = os.getenv("RESEND_API_KEY")
-
 def send_reset_email(email: str, reset_token: str, user_name: str):
     reset_link = f"https://job-tracker-sally.netlify.app/reset-password?token={reset_token}"
     
+    # send to your verified email for now
+    # the subject shows who actually requested it
     resend.Emails.send({
-        "from": "JobTracker <onboarding@resend.dev>",
-        "to": email,
-        "subject": "Job Tracker — Password Reset Request",
+        "from": "onboarding@resend.dev",
+        "to": "sallyabuga11@gmail.com",  # your verified email
+        "subject": f"Password Reset Request for {email}",
         "html": f"""
         <html>
         <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <h2 style="color: #378ADD;">Password Reset Request</h2>
+            <p>Reset requested for: <strong>{email}</strong></p>
             <p>Hi {user_name},</p>
             <p>Click the button below to reset your password.</p>
             <p>This link expires in <strong>30 minutes.</strong></p>
@@ -45,7 +45,7 @@ def send_reset_email(email: str, reset_token: str, user_name: str):
         </html>
         """
     })
-    print(f"✅ Email sent to {email}!")
+    print(f"✅ Reset email sent for {email}!")
 # ── Schemas ───────────────────────────────────────────────────────────────────
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
