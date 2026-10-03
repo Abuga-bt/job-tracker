@@ -6,10 +6,9 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-import models, auth, os, secrets, smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import models, auth, os, secrets
 import resend
+resend.api_key = os.getenv("RESEND_API_KEY")
 
 load_dotenv()
 
