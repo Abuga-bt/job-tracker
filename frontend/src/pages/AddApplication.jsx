@@ -39,7 +39,7 @@ function AddApplication() {
           "Authorization": `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`
         },
         body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
+          model: "llama-3.1-8b-instant",
           max_tokens: 500,
           messages: [
             {
