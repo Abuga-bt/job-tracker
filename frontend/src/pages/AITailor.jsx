@@ -9,6 +9,9 @@ function AITailor() {
   const [error, setError] = useState("")
 
   const handleTailor = async () => {
+    console.log("Groq key:", import.meta.env.VITE_GROQ_API_KEY) // temp debug
+    console.log("Key length:", import.meta.env.VITE_GROQ_API_KEY?.length)
+
     if (!cvText || !jobDescription) {
       setError("Please fill in both your CV and the job description")
       return
