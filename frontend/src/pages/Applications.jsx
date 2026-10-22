@@ -51,6 +51,8 @@ function Applications() {
     "Interview": { badge: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300", bar: "bg-purple-500" },
     "Offered":   { badge: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",   bar: "bg-green-500" },
     "Rejected":  { badge: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",           bar: "bg-red-400" },
+    "Waiting ": { badge: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300", bar: "bg-amber-500" },
+    "Stale":     { badge: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300",       bar: "bg-gray-400" },
   }
 
   const iconColors = [
@@ -58,6 +60,7 @@ function Applications() {
     "bg-purple-100 text-purple-600",
     "bg-green-100 text-green-600",
     "bg-amber-100 text-amber-600",
+    "bg-gray-100 text-gray-600",
   ]
 
   // filter by status and search
@@ -200,6 +203,8 @@ function Applications() {
                       <option>Interview</option>
                       <option>Offered</option>
                       <option>Rejected</option>
+                      <option>Waiting</option>
+                      <option>Stale</option>
                     </select>
                     <button
                       onClick={() => handleDelete(app.id)}

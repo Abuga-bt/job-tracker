@@ -82,7 +82,7 @@ class ApplicationCreate(BaseModel):
         return v
 
 class ApplicationUpdate(BaseModel):
-    status: Optional[Literal["Applied", "Interview", "Rejected", "Offered"]] = None
+    status: Optional[Literal["Applied", "Waiting", "Interview", "Offered", "Rejected", "Stale"]] = None
     feedback: Optional[str] = None
     notes: Optional[str] = None
     job_url: Optional[str] = None

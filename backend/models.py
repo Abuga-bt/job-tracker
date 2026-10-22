@@ -3,6 +3,19 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database import Base
 
+status = Column(
+    Enum(
+        "Applied",
+        "Waiting for Response",
+        "Interview",
+        "Offered",
+        "Rejected",
+        "Stale"          # optional but useful
+    ),
+    default="Applied"
+)
+status_updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
+deadline = Column(DateTime, nullable=True)
 class User(Base):
     __tablename__ = "users"
 
@@ -24,7 +37,7 @@ class Application(Base):
     company_name = Column(String(100), nullable=False)
     job_title = Column(String(100), nullable=False)
     job_type = Column(String(50))
-    status = Column(Enum("Applied", "Interview", "Rejected", "Offered"), default="Applied")
+    status = Column(Enum("Applied", "Waiting for Response", "Interview", "Offered", "Rejected", "Stale"), default="Applied")
     date_applied = Column(DateTime, default=func.now())
     deadline = Column(DateTime, nullable=True)
     job_url = Column(String(255), nullable=True)

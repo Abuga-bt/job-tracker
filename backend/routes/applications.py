@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from database import get_db
 from schemas import ApplicationCreate, ApplicationUpdate
 from routes.users import get_current_user
+from datetime import datetime, timedelta
+from sqlalchemy import or_
 import models
 
 router = APIRouter(prefix="/applications", tags=["Applications"])
@@ -46,12 +48,40 @@ def create_application(
 def get_applications(
     current_user = Depends(get_current_user),
     db: Session = Depends(get_db)
-):
-    # filter applications by current user's id
-    # so users only see THEIR applications, not everyone's
+): # filter applications by current user's id    # so users only see THEIR applications, not 
     applications = db.query(models.Application).filter(
         models.Application.user_id == current_user.id
-    ).all()                            # .all() returns a list
+    ).all()
+
+    now = datetime.utcnow()
+    changed = False
+
+    for app in applications:
+        # 1. Deadline passed while still Applied → Waiting for Response
+        if (
+            app.status == "Applied"
+            and app.deadline is not None
+            and app.deadline < now
+        ):
+            app.status = "Waiting for Response"
+            app.status_updated_at = now
+            changed = True
+
+        # 2. Waiting or Interview older than 30 days → Stale (or just flag)
+        if app.status in ("Waiting for Response", "Interview"):
+            # fall back to date_applied if status_updated_at is missing
+            reference = app.status_updated_at or app.date_applied
+            if reference and reference < now - timedelta(days=30):
+                app.status = "Stale"          # or leave status and set a flag
+                app.status_updated_at = now
+                changed = True
+
+    if changed:
+        db.commit()
+        # refresh so the response has the new values
+        for app in applications:
+            db.refresh(app)
+
     return applications
 
 

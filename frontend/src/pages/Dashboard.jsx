@@ -52,6 +52,8 @@ function Dashboard() {
     "Interview": { badge: "bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300", bar: "bg-purple-500" },
     "Offered":   { badge: "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300",  bar: "bg-green-500" },
     "Rejected":  { badge: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",    bar: "bg-red-400" },
+    "Waiting": { badge: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300", bar: "bg-amber-500" },
+    "Stale":     { badge: "bg-gray-100 text-gray-700 dark:bg-gray-900 dark:text-gray-300",      bar: "bg-gray-400" },
   }
 
   // icon colors for company initials
@@ -60,6 +62,7 @@ function Dashboard() {
     "bg-purple-100 text-purple-600",
     "bg-green-100 text-green-600",
     "bg-amber-100 text-amber-600",
+    "bg-gray-100 text-gray-600",
   ]
 
   // filter applications
@@ -87,6 +90,8 @@ function Dashboard() {
             { label: "Interview", color: "text-purple-500", count: applications.filter(a => a.status === "Interview").length },
             { label: "Offered",   color: "text-green-500",  count: applications.filter(a => a.status === "Offered").length },
             { label: "Rejected",  color: "text-red-400",    count: applications.filter(a => a.status === "Rejected").length },
+            { label: "Waiting",  color: "text-amber-500",    count: applications.filter(a => a.status === "Waiting").length },
+            { label: "Stale",  color: "text-gray-400",    count: applications.filter(a => a.status === "Stale").length },
           ].map(stat => (
             <div key={stat.label} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-4">
               <p className={`text-3xl font-medium ${stat.color} mb-1`}>{stat.count}</p>
@@ -183,6 +188,8 @@ function Dashboard() {
                     <option>Interview</option>
                     <option>Offered</option>
                     <option>Rejected</option>
+                    <option>Waiting</option>
+                    <option>Stale</option>
                   </select>
 
                   {/* delete */}
